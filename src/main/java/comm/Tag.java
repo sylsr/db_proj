@@ -2,7 +2,7 @@ package comm;
 
 /**
  * @author Tyler Manning
- * Class that represents a label for a task
+ * Class that represents a tag for a task
  */
 public class Tag implements Comparable<Tag>{
     private String label;
