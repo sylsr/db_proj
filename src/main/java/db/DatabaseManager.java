@@ -3,6 +3,7 @@ package db;
 import comm.Tag;
 import comm.Task;
 import comm.User;
+import java.sql.*;
 
 import java.util.LinkedList;
 
@@ -11,16 +12,28 @@ import java.util.LinkedList;
  */
 public class DatabaseManager {
     private User broncoUser;
+    private Connection broncoConnection;
 
     public DatabaseManager(User broncoUser){
         this.broncoUser=broncoUser;
     }
 
+    public void getDBConnection(){
+        try{
+            this.broncoConnection = DriverManager.getConnection(broncoUser.getSandboxUserId(), broncoUser.getBroncoUserId(), broncoUser.getBroncoPassword());
+        }
+        catch(Exception e){
+            System.out.println("Failure to connect to database.");
+        }
+
+    }
     /**
      * Gets the list of tasks marked as active
      * @return list of tasks
      */
     public LinkedList<Task> getActiveTasks(){
+
+
         return null; //TODO
     }
 
