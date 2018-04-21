@@ -88,10 +88,23 @@ public class DatabaseManager {
      * Gets the list of tasks marked as active
      * @return list of tasks
      */
-    public LinkedList<Task> getActiveTasks(){
+    public LinkedList<Task> getActiveTasks() throws SQLException{
+        String sql = "SELECT * FROM Task WHERE status = 'ACTIVE'";
+        LinkedList<Task> activeTasks = new LinkedList<>();
+
+        java.sql.Statement stmt = broncoConnection.createStatement();
+
+        ResultSet result = stmt.executeQuery(sql);
+
+        while(result.next()){
+            Task temp = new Task(result.getInt(1), result.getString(2), result.getDate(3), result.getDate(4), result.getNString(5));
+            activeTasks.add(temp);
+        }
+        broncoConnection.commit();
+        stmt.close();
 
 
-        return null; //TODO
+        return activeTasks;
     }
 
     /**

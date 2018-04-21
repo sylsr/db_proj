@@ -44,6 +44,14 @@ public class Task implements Comparable<Task>{
         this.stat = Status.ACTIVE;//Default to active
     }
 
+    public Task(int id, String label, Date createDate, Date dueDate, String status){
+        this.label =label;
+        this.id = id;
+        this.createDate = createDate;
+        this.dueDate = dueDate;
+        this.stat = Status.valueOf(status);
+
+    }
     /**
      * Gets the list of tags associated with this task
      * @return tag list
