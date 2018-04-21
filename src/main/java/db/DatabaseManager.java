@@ -3,9 +3,12 @@ package db;
 import comm.Tag;
 import comm.Task;
 import comm.User;
-import java.sql.*;
 
+import java.net.ServerSocket;
+import java.sql.*;
+import com.jcraft.jsch.*;
 import java.util.LinkedList;
+
 
 /**
  * @author Tyler Manning
@@ -14,19 +17,61 @@ public class DatabaseManager {
     private User broncoUser;
     private Connection broncoConnection;
 
-    public DatabaseManager(User broncoUser){
-        this.broncoUser=broncoUser;
+    public DatabaseManager(User broncoUser) {
+        this.broncoUser = broncoUser;
+        this.broncoConnection = getDBConnection();
     }
 
-    public void getDBConnection(){
-        try{
-            this.broncoConnection = DriverManager.getConnection(broncoUser.getSandboxUserId(), broncoUser.getBroncoUserId(), broncoUser.getBroncoPassword());
-        }
-        catch(Exception e){
-            System.out.println("Failure to connect to database.");
-        }
+    public Connection getDBConnection() {
 
+        Connection con = null;
+        Session session = null;
+
+        try {
+
+            session = sessionSSH();
+
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            con = DriverManager.getConnection("dbc:mysql://localhost:" + 7555, broncoUser.getSandboxUserId(), broncoUser.getSandboxPassword());
+
+            return con;
+        } catch (Exception ex) {
+            System.out.println("Exception: " + ex.getMessage());
+
+        }
+        return con;
     }
+    /**
+     * Gets the ssh
+     * @return ssh connection
+     */
+    public Session sessionSSH(){
+
+        Session session = null;
+        JSch jsch = new JSch();
+
+        java.util.Properties config = new java.util.Properties();
+        config.put("StrictHostKeyChecking", "no");
+
+        try {
+            session = jsch.getSession(broncoUser.getBroncoUserId(), "onyx.boisestate.edu", 22);
+
+            session.setPassword(broncoUser.getBroncoPassword());
+            session.setConfig(config);
+
+            System.out.println("Establishing a Connection...");
+
+            session.connect();
+            session.setPortForwardingL(7555, "localhost", broncoUser.getPortNum());
+            return session;
+
+        } catch(Exception e){
+            System.out.println("Exception in SSH: " + e.getMessage());
+        }
+        return session;
+    }
+
+
     /**
      * Gets the list of tasks marked as active
      * @return list of tasks
