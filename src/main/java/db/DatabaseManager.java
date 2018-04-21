@@ -16,27 +16,30 @@ import java.util.LinkedList;
 public class DatabaseManager {
     private User broncoUser;
     private Connection broncoConnection;
+    private Session broncoSession;
 
     public DatabaseManager(User broncoUser) {
         this.broncoUser = broncoUser;
         this.broncoConnection = getDBConnection();
     }
-
+    /**
+     * Establishes connection to the database remotely.
+     * @return Connection
+     */
     public Connection getDBConnection() {
 
         Connection con = null;
-        Session session = null;
 
         try {
 
-            session = sessionSSH();
+            this.broncoSession = sessionSSH();
 
             Class.forName("com.mysql.jdbc.Driver").newInstance();
             con = DriverManager.getConnection("dbc:mysql://localhost:" + 7555, broncoUser.getSandboxUserId(), broncoUser.getSandboxPassword());
 
             return con;
         } catch (Exception ex) {
-            System.out.println("Exception: " + ex.getMessage());
+            System.out.println("Exception Connection: " + ex.getMessage());
 
         }
         return con;
@@ -69,6 +72,15 @@ public class DatabaseManager {
             System.out.println("Exception in SSH: " + e.getMessage());
         }
         return session;
+    }
+
+    /**
+     * Closes and disconnects external connections.
+     */
+    public void logout() throws SQLException{
+        broncoConnection.setAutoCommit(true);
+        broncoConnection.close();
+        broncoSession.disconnect();
     }
 
 
