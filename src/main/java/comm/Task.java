@@ -43,7 +43,14 @@ public class Task implements Comparable<Task>{
         this.createDate = new Date();
         this.stat = Status.ACTIVE;//Default to active
     }
-
+    /**
+     * Overloaded constructor
+     * @param id the primary key of the id
+     * @param label the name of the task
+     * @param createDate the date the task was created.
+     * @param dueDate the date the task is due.
+     * @param status the status of the task.
+     */
     public Task(int id, String label, Date createDate, Date dueDate, String status){
         this.label =label;
         this.id = id;

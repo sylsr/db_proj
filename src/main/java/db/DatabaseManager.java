@@ -4,9 +4,14 @@ import comm.Tag;
 import comm.Task;
 import comm.User;
 
-import java.net.ServerSocket;
+
 import java.sql.*;
 import com.jcraft.jsch.*;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 
 
@@ -97,7 +102,7 @@ public class DatabaseManager {
         ResultSet result = stmt.executeQuery(sql);
 
         while(result.next()){
-            Task temp = new Task(result.getInt(1), result.getString(2), result.getDate(3), result.getDate(4), result.getNString(5));
+            Task temp = new Task(result.getInt(1), result.getString(2), result.getDate(3), result.getDate(4), result.getString(5));
             activeTasks.add(temp);
         }
         broncoConnection.commit();
@@ -111,8 +116,23 @@ public class DatabaseManager {
      * Gets the list of tasks marked as overdue
      * @return list of tasks
      */
-    public LinkedList<Task> getOverdueTasks(){
-        return null; //TODO
+    public LinkedList<Task> getOverdueTasks()throws SQLException{
+        String sql = "SELECT * FROM Task WHERE status = 'OVERDUE'";
+        LinkedList<Task> overDueTasks = new LinkedList<>();
+
+        java.sql.Statement stmt = broncoConnection.createStatement();
+
+        ResultSet result = stmt.executeQuery(sql);
+
+        while(result.next()){
+            Task temp = new Task(result.getInt(1), result.getString(2), result.getDate(3), result.getDate(4), result.getString(5));
+            overDueTasks.add(temp);
+        }
+        broncoConnection.commit();
+        stmt.close();
+
+
+        return overDueTasks;
     }
 
     /**
@@ -120,8 +140,23 @@ public class DatabaseManager {
      * @param tag the tag to find tasks with
      * @return the list of tasks
      */
-    public LinkedList<Task> getActiveTasksWithTag(Tag tag){
-        return null;//TODO
+    public LinkedList<Task> getActiveTasksWithTag(Tag tag) throws SQLException{
+        String sql = "SELECT * FROM Task_tag JOIN Task on Task_tag.task_id = Task.task_id JOIN Tag on Task_tag.tag_id = Tag.tag_id  WHERE Tag.label = '" + tag.toString() + "' AND Task.status ='ACTIVE'";
+        LinkedList<Task> activeTasks = new LinkedList<>();
+
+        java.sql.Statement stmt = broncoConnection.createStatement();
+
+        ResultSet result = stmt.executeQuery(sql);
+
+        while(result.next()){
+            Task temp = new Task(result.getInt(1), result.getString(4), result.getDate(5), result.getDate(6), result.getString(7));
+            activeTasks.add(temp);
+        }
+        broncoConnection.commit();
+        stmt.close();
+
+
+        return activeTasks;
     }
 
     /**
@@ -129,8 +164,23 @@ public class DatabaseManager {
      * @param tag the tag to find tasks with
      * @return the list of tasks
      */
-    public LinkedList<Task> getCompletedTasksWithTag(Tag tag){
-        return null;//TODO
+    public LinkedList<Task> getCompletedTasksWithTag(Tag tag) throws SQLException{
+        String sql = "SELECT * FROM Task_tag JOIN Task on Task_tag.task_id = Task.task_id JOIN Tag on Task_tag.tag_id = Tag.tag_id  WHERE Tag.label = '" + tag.toString() + "' AND Task.status ='FINISHED'";
+        LinkedList<Task> completedTasks = new LinkedList<>();
+
+        java.sql.Statement stmt = broncoConnection.createStatement();
+
+        ResultSet result = stmt.executeQuery(sql);
+
+        while(result.next()){
+            Task temp = new Task(result.getInt(1), result.getString(4), result.getDate(5), result.getDate(6), result.getString(7));
+            completedTasks.add(temp);
+        }
+        broncoConnection.commit();
+        stmt.close();
+
+
+        return completedTasks;
     }
 
 
@@ -138,16 +188,61 @@ public class DatabaseManager {
      * Gets the list of tasks due today
      * @return the list of tasks
      */
-    public LinkedList<Task> getTasksDueToday(){
-        return null;//TODO
+    public LinkedList<Task> getTasksDueToday() throws SQLException{
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        String today = dateFormat.format(date);
+
+        String sql = "SELECT * FROM Task WHERE due_Date = '" + today + "'";
+        LinkedList<Task> dueTasks = new LinkedList<>();
+
+        java.sql.Statement stmt = broncoConnection.createStatement();
+
+        ResultSet result = stmt.executeQuery(sql);
+
+        while(result.next()){
+            Task temp = new Task(result.getInt(1), result.getString(2), result.getDate(3), result.getDate(4), result.getString(5));
+            dueTasks.add(temp);
+        }
+        broncoConnection.commit();
+        stmt.close();
+
+
+        return dueTasks;
     }
 
     /**
      * Gets the list of tasks due soon (within the next 3 days
      * @return the list of tasks
      */
-    public LinkedList<Task> getTasksDueSoon(){
-        return null;//TODO
+    public LinkedList<Task> getTasksDueSoon() throws SQLException{
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+
+        //Add three days to today
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.DATE, 2);
+
+        String today = dateFormat.format(date);
+        String dayAfterTomorrow = dateFormat.format(c.getTime());
+
+        String sql = "SELECT * FROM Task WHERE due_Date > ='" + today + "' AND <= '" + dayAfterTomorrow + "'";
+        LinkedList<Task> dueTasks = new LinkedList<>();
+
+        java.sql.Statement stmt = broncoConnection.createStatement();
+
+        ResultSet result = stmt.executeQuery(sql);
+
+        while(result.next()){
+            Task temp = new Task(result.getInt(1), result.getString(2), result.getDate(3), result.getDate(4), result.getString(5));
+            dueTasks.add(temp);
+        }
+        broncoConnection.commit();
+        stmt.close();
+
+
+        return dueTasks;
     }
 
     /**
