@@ -250,8 +250,26 @@ public class DatabaseManager {
      * @param create the task to create
      * @return the task that was just created (with updated fields such as id)
      */
-    public Task createTask(Task create){
-        return null;//TODO:
+    public Task createTask(Task create) throws SQLException{
+
+        String sql = "INSERT Task (label, due_date, Status) values ('" + create.getLabel() + "', '" + create.getDueDate() +  "' , '" + create.getStat().toString() + "' )";
+
+        java.sql.Statement stmt = broncoConnection.createStatement();
+
+        //Execute query and return the ID of the task that was inserted  into the query
+        int id = stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+
+
+        broncoConnection.commit();
+
+        create.setId(id);
+
+        Date date = new Date();
+        create.setCreateDate(date);
+
+        stmt.close();
+
+        return create;
     }
 
     /**
@@ -269,8 +287,27 @@ public class DatabaseManager {
      * @param update the task to update (already includes updated fields)
      * @return the updated task
      */
-    public Task update(Task update){
-        return null;
+    public Task update(Task update) throws SQLException{
+        String sql = "UPDATE Task SET label = '" + update.getLabel() + "', due_date = '" + update.getDueDate() + "', Status= '" + update.getStat().toString() + "'  WHERE task_id = " + update.getId() ;
+
+        java.sql.Statement stmt = broncoConnection.createStatement();
+
+        boolean result = stmt.execute(sql);
+        broncoConnection.commit();
+
+        for(Tag t : update.getTags()){
+            sql = "INSERT INTO Task_tag (task_id, tag_id) " +
+                    "SELECT * FROM ( SELECT " +update.getId()+", " + t.getId()+ ") AS temp " +
+                    "WHERE NOT EXISTS( " +
+                    "SELECT task_id, tag_id FROM Task_tag WHERE task_id =" +update.getId()+ " AND tag_id =" + t.getId()+ ");";
+            result = stmt.execute(sql);
+            broncoConnection.commit();
+        }
+
+
+        stmt.close();
+
+        return update;
     }
 
     /**

@@ -110,7 +110,10 @@ public class Task implements Comparable<Task>{
     public Date getCreateDate() {
         return createDate;
     }
-
+    /**
+     * sets the creation date of this task
+     */
+    public void setCreateDate(Date createDate) { this.createDate = createDate; }
     /**
      * Gets the due date of this task
      * @return gets the due date of this task

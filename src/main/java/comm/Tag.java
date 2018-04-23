@@ -6,7 +6,7 @@ package comm;
  */
 public class Tag implements Comparable<Tag>{
     private String label;
-
+    private int id;
     /**
      * Default constructor
      * @param label string that represents the label
@@ -14,6 +14,12 @@ public class Tag implements Comparable<Tag>{
     public Tag(String label){
         this.label=label;
     }
+
+    public Tag(String label, int id){
+        this.label=label;
+        this.id = id;
+    }
+    public int getId(){return this.id;}
 
     @Override
     public int hashCode() {
