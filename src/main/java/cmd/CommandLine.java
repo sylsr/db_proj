@@ -8,6 +8,7 @@ import comm.User;
 import db.DatabaseManager;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -29,7 +30,12 @@ public class CommandLine {
      */
     @Command
     public String active(){
-        return db.getActiveTasks().toString();
+        try {
+            return db.getActiveTasks().toString();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
@@ -39,7 +45,12 @@ public class CommandLine {
      */
     @Command
     public int add(String label){
-        return db.createTask(new Task(label)).getId();
+        try {
+            return db.createTask(new Task(label)).getId();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     /**
@@ -52,7 +63,11 @@ public class CommandLine {
     public String due(int id, String date){
         Task update = db.get(id);
         update.setDueDate(new Date(date));
-        db.update(update);
+        try {
+            db.update(update);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return "Updated task successfully";
     }
 
@@ -68,7 +83,11 @@ public class CommandLine {
         for(String t : tag){
             update.addTag(new Tag(t));
         }
-        db.update(update);
+        try {
+            db.update(update);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return "Successfully added the tag to the task";
     }
 
@@ -81,7 +100,11 @@ public class CommandLine {
     public String finish(int id){
         Task update = db.get(id);
         update.setStat(Task.Status.FINISHED);
-        db.update(update);
+        try {
+            db.update(update);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return "Finished the task";
     }
 
@@ -94,7 +117,11 @@ public class CommandLine {
     public String cancel(int id){
         Task update = db.get(id);
         update.setStat(Task.Status.CANCELLED);
-        db.update(update);
+        try {
+            db.update(update);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return "Cancelled the task";
     }
 
@@ -115,7 +142,12 @@ public class CommandLine {
      */
     @Command
     public String active( String tag){
-        return db.getActiveTasksWithTag(new Tag(tag)).toString();
+        try {
+            return db.getActiveTasksWithTag(new Tag(tag)).toString();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 
@@ -126,7 +158,12 @@ public class CommandLine {
      */
     @Command
     public String completed(String tag){
-        return db.getCompletedTasksWithTag(new Tag(tag)).toString();
+        try {
+            return db.getCompletedTasksWithTag(new Tag(tag)).toString();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 
@@ -136,7 +173,12 @@ public class CommandLine {
      */
     @Command
     public String overdue(){
-        return db.getOverdueTasks().toString();
+        try {
+            return db.getOverdueTasks().toString();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
@@ -148,9 +190,17 @@ public class CommandLine {
     public String due(String timeline){
         switch(timeline){
             case "today":
-                return db.getTasksDueToday().toString();
+                try {
+                    return db.getTasksDueToday().toString();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             case "soon":
-                return db.getTasksDueSoon().toString();
+                try {
+                    return db.getTasksDueSoon().toString();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
         }
         return "Please enter a valid timeline (either 'today' or 'soon'";
     }
@@ -165,7 +215,11 @@ public class CommandLine {
     public String rename(int id, String label){
         Task update = db.get(id);
         update.setLabel(label);
-        db.update(update);
+        try {
+            db.update(update);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return "Successfully changed the label";
     }
 
