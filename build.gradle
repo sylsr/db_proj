@@ -21,4 +21,5 @@ dependencies {
     compile group: 'com.googlecode.clichemaven', name: 'cliche', version: '110413'
     // https://mvnrepository.com/artifact/com.jcraft/jsch
     compile group: 'com.jcraft', name: 'jsch', version: '0.1.44-1'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
 }
