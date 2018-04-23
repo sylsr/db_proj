@@ -31,7 +31,7 @@ public class DatabaseManager {
      * Establishes connection to the database remotely.
      * @return Connection
      */
-    public Connection getDBConnection() {
+    private Connection getDBConnection() {
 
         Connection con = null;
 
@@ -47,13 +47,13 @@ public class DatabaseManager {
             System.out.println("Exception Connection: " + ex.getMessage());
 
         }
-        return con;
+        return null;
     }
     /**
      * Gets the ssh
      * @return ssh connection
      */
-    public Session sessionSSH(){
+    private Session sessionSSH(){
 
         Session session = null;
         JSch jsch = new JSch();
@@ -316,7 +316,7 @@ public class DatabaseManager {
      * Searches for tags with the specified label and inserts the tag if it doesn't exist.
      * @param tags the tags to insert
      */
-    public void insertTag(LinkedList<Tag> tags) throws SQLException{
+    private void insertTag(LinkedList<Tag> tags) throws SQLException{
 
         java.sql.Statement stmt = broncoConnection.createStatement();
 
