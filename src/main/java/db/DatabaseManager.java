@@ -44,8 +44,10 @@ public class DatabaseManager {
 
             return con;
         } catch (Exception ex) {
-            System.out.println("Exception Connection: " + ex.getMessage());
-
+            System.err.println("Exception Connection: " + ex.getMessage());
+            ex.printStackTrace();
+            System.err.println("Exiting...");
+            System.exit(1);
         }
         return null;
     }
@@ -74,7 +76,10 @@ public class DatabaseManager {
             return session;
 
         } catch(Exception e){
-            System.out.println("Exception in SSH: " + e.getMessage());
+            System.err.println("Exception in SSH: " + e.getMessage());
+            e.printStackTrace();
+            System.err.println("Exiting...");
+            System.exit(1);
         }
         return session;
     }
