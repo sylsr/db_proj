@@ -295,6 +295,8 @@ public class DatabaseManager {
         boolean result = stmt.execute(sql);
         broncoConnection.commit();
 
+        insertTag(update.getTags());
+
         for(Tag t : update.getTags()){
             sql = "INSERT INTO Task_tag (task_id, tag_id) " +
                     "SELECT * FROM ( SELECT " +update.getId()+", " + t.getId()+ ") AS temp " +
@@ -311,6 +313,28 @@ public class DatabaseManager {
     }
 
     /**
+     * Searches for tags with the specified label and inserts the tag if it doesn't exist.
+     * @param tags the tags to insert
+     */
+    public void insertTag(LinkedList<Tag> tags) throws SQLException{
+
+        java.sql.Statement stmt = broncoConnection.createStatement();
+
+        String sql = "";
+
+        for(Tag t : tags){
+            sql = "INSERT INTO Tag (label) " +
+                    "SELECT * FROM ( SELECT '" + t.toString()+"') AS temp " +
+                    "WHERE NOT EXISTS( " +
+                    "SELECT label FROM Tag WHERE label ='" + t.toString()+"');";
+            int id = stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+            t.setId(id);
+            broncoConnection.commit();
+        }
+        stmt.close();
+    }
+
+    /**
      * Searches for tasks with the specified term
      * @param term the term to search by
      * @return the list of tasks
@@ -318,6 +342,8 @@ public class DatabaseManager {
     public LinkedList<Task> search(String term){
         return null;//TODO
     }
+
+
 
 
 }
