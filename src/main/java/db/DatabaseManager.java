@@ -40,6 +40,7 @@ public class DatabaseManager {
             this.broncoSession = sessionSSH();
 
             Class.forName("com.mysql.jdbc.Driver").newInstance();
+            System.out.println("Attempting to connect to the database.");
             con = DriverManager.getConnection("dbc:mysql://localhost:" + 7555, broncoUser.getSandboxUserId(), broncoUser.getSandboxPassword());
 
             return con;
@@ -69,7 +70,7 @@ public class DatabaseManager {
             session.setPassword(broncoUser.getBroncoPassword());
             session.setConfig(config);
 
-            System.out.println("Establishing a Connection...");
+            System.out.println("Establishing an SSH Connection...");
 
             session.connect();
             session.setPortForwardingL(7555, "localhost", broncoUser.getPortNum());
