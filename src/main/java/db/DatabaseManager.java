@@ -27,6 +27,8 @@ public class DatabaseManager {
     public DatabaseManager(User broncoUser) {
         this.broncoUser = broncoUser;
         this.broncoConnection = getDBConnection();
+        //Update Tasks
+        updateTaskSatus();
     }
     /**
      * Establishes connection to the database remotely.
@@ -312,7 +314,7 @@ public class DatabaseManager {
      * @return the updated task
      */
     public Task update(Task update) throws SQLException{
-        String sql = "UPDATE Task SET label = '" + update.getLabel() + "', due_date = '" + update.getDueDate() + "', Status= '" + update.getStat().toString() + "'  WHERE task_id = " + update.getId() ;
+        String sql = "UPDATE Task SET label = '" + update.getLabel() + "', due_date = '" + update.getDueDate() + "', Status = '" + update.getStat().toString() + "'  WHERE task_id = " + update.getId() ;
 
         java.sql.Statement stmt = broncoConnection.createStatement();
 
@@ -380,7 +382,27 @@ public class DatabaseManager {
      * @return the list of tasks
      */
     public LinkedList<Task> search(String term){
-        return null;//TODO
+
+        String sql = "SELECT * FROM Task WHERE label LIKE '%" + term + "%' ";
+        LinkedList<Task> leTasks = new LinkedList<>();
+
+        try{
+            java.sql.Statement stmt = broncoConnection.createStatement();
+
+            ResultSet result = stmt.executeQuery(sql);
+
+            while(result.next()){
+                Task temp = new Task(result.getInt(1), result.getString(2), result.getDate(3), result.getDate(4), result.getString(5));
+                leTasks.add(temp);
+            }
+            stmt.close();
+
+        }catch(SQLException e){
+            System.out.println(e.getSQLState());
+        }
+
+    return leTasks;
+
     }
 
 
