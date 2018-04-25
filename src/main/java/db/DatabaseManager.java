@@ -42,7 +42,7 @@ public class DatabaseManager {
 
             Class.forName("com.mysql.jdbc.Driver").newInstance();
             System.out.println("Attempting to connect to the database.");
-            con = DriverManager.getConnection("jdbc:mysql://localhost:7555/todoList/?verifyServerCertificate=false&useSSL=true", broncoUser.getSandboxUserId(), broncoUser.getSandboxPassword());
+            con = DriverManager.getConnection("jdbc:mysql://localhost:7555/todoList?verifyServerCertificate=false&useSSL=true", broncoUser.getSandboxUserId(), broncoUser.getSandboxPassword());
 
             return con;
         } catch (Exception ex) {
@@ -113,7 +113,7 @@ public class DatabaseManager {
             Task temp = new Task(result.getInt(1), result.getString(2), result.getDate(3), result.getDate(4), result.getString(5));
             activeTasks.add(temp);
         }
-        broncoConnection.commit();
+
         stmt.close();
 
 
@@ -136,7 +136,7 @@ public class DatabaseManager {
             Task temp = new Task(result.getInt(1), result.getString(2), result.getDate(3), result.getDate(4), result.getString(5));
             overDueTasks.add(temp);
         }
-        broncoConnection.commit();
+
         stmt.close();
 
 
@@ -160,7 +160,7 @@ public class DatabaseManager {
             Task temp = new Task(result.getInt(1), result.getString(4), result.getDate(5), result.getDate(6), result.getString(7));
             activeTasks.add(temp);
         }
-        broncoConnection.commit();
+
         stmt.close();
 
 
@@ -184,7 +184,7 @@ public class DatabaseManager {
             Task temp = new Task(result.getInt(1), result.getString(4), result.getDate(5), result.getDate(6), result.getString(7));
             completedTasks.add(temp);
         }
-        broncoConnection.commit();
+
         stmt.close();
 
 
@@ -212,7 +212,6 @@ public class DatabaseManager {
             Task temp = new Task(result.getInt(1), result.getString(2), result.getDate(3), result.getDate(4), result.getString(5));
             dueTasks.add(temp);
         }
-        broncoConnection.commit();
         stmt.close();
 
 
@@ -246,7 +245,6 @@ public class DatabaseManager {
             Task temp = new Task(result.getInt(1), result.getString(2), result.getDate(3), result.getDate(4), result.getString(5));
             dueTasks.add(temp);
         }
-        broncoConnection.commit();
         stmt.close();
 
 
@@ -268,8 +266,6 @@ public class DatabaseManager {
         int id = stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
 
 
-        broncoConnection.commit();
-
         create.setId(id);
 
         Date date = new Date();
@@ -285,8 +281,24 @@ public class DatabaseManager {
      * @param id the id that specified the task
      * @return the task
      */
-    public Task get(int id){
-        return null;//TODO:
+    public Task get(int id) throws SQLException{
+
+        Task temp = null;
+        String sql = "SELECT * FROM Task WHERE task_id = " + id;
+
+        java.sql.Statement stmt = broncoConnection.createStatement();
+
+        ResultSet result = stmt.executeQuery(sql);
+
+        while(result.next()){
+            temp = new Task(result.getInt(1), result.getString(2), result.getDate(3), result.getDate(4), result.getString(5));
+
+        }
+
+        stmt.close();
+
+
+        return temp;
     }
 
     /**
@@ -301,7 +313,7 @@ public class DatabaseManager {
         java.sql.Statement stmt = broncoConnection.createStatement();
 
         boolean result = stmt.execute(sql);
-        broncoConnection.commit();
+
 
         insertTag(update.getTags());
 
@@ -311,7 +323,7 @@ public class DatabaseManager {
                     "WHERE NOT EXISTS( " +
                     "SELECT task_id, tag_id FROM Task_tag WHERE task_id =" +update.getId()+ " AND tag_id =" + t.getId()+ ");";
             result = stmt.execute(sql);
-            broncoConnection.commit();
+
         }
 
 
@@ -337,11 +349,27 @@ public class DatabaseManager {
                     "SELECT label FROM Tag WHERE label ='" + t.toString()+"');";
             int id = stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
             t.setId(id);
-            broncoConnection.commit();
+
         }
         stmt.close();
     }
 
+    public void updateTaskSatus(){
+        try{
+        java.sql.Statement stmt = broncoConnection.createStatement();
+        String sql = "UPDATE Task SET status = 'OVERDUE'" +
+                 " WHERE due_date < curdate()";
+
+            boolean result = stmt.execute(sql);
+            stmt.close();
+        }
+        catch(SQLException esql){
+            System.out.println(esql.getSQLState());
+        }
+
+
+
+    }
     /**
      * Searches for tasks with the specified term
      * @param term the term to search by
