@@ -281,22 +281,26 @@ public class DatabaseManager {
      * @param id the id that specified the task
      * @return the task
      */
-    public Task get(int id) throws SQLException{
+    public Task get(int id){
 
         Task temp = null;
-        String sql = "SELECT * FROM Task WHERE task_id = " + id;
+        try{
 
-        java.sql.Statement stmt = broncoConnection.createStatement();
+            String sql = "SELECT * FROM Task WHERE task_id = " + id;
 
-        ResultSet result = stmt.executeQuery(sql);
+            java.sql.Statement stmt = broncoConnection.createStatement();
 
-        while(result.next()){
-            temp = new Task(result.getInt(1), result.getString(2), result.getDate(3), result.getDate(4), result.getString(5));
+            ResultSet result = stmt.executeQuery(sql);
 
+            while(result.next()){
+                temp = new Task(result.getInt(1), result.getString(2), result.getDate(3), result.getDate(4), result.getString(5));
+
+            }
+
+            stmt.close();
+        } catch(SQLException e){
+            System.out.println(e.getMessage());
         }
-
-        stmt.close();
-
 
         return temp;
     }
