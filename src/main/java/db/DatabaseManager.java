@@ -17,6 +17,7 @@ import java.util.LinkedList;
 
 /**
  * @author Tyler Manning
+ * @author Lance Martin
  */
 public class DatabaseManager {
     private User broncoUser;
