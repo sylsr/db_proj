@@ -12,6 +12,7 @@
     <orderEntry type="module" module-name="db_main" />
     <orderEntry type="library" name="Gradle: com.googlecode.clichemaven:cliche:110413" level="project" />
     <orderEntry type="library" name="Gradle: com.jcraft:jsch:0.1.44-1" level="project" />
+    <orderEntry type="library" name="Gradle: mysql:mysql-connector-java:5.1.6" level="project" />
     <orderEntry type="library" name="Gradle: junit:junit:4.12" level="project" />
     <orderEntry type="library" name="Gradle: org.hamcrest:hamcrest-core:1.3" level="project" />
   </component>
