@@ -69,6 +69,7 @@ public class DatabaseManager {
 
             session.setPassword(broncoUser.getBroncoPassword());
             session.setConfig(config);
+            session.setConfig("PreferredAuthentications", "pulickey,keyboard-interactive,password");
 
             System.out.println("Establishing an SSH Connection...");
 
