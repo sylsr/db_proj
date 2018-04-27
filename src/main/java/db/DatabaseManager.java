@@ -21,10 +21,16 @@ import java.util.LinkedList;
  */
 public class DatabaseManager {
     private User broncoUser;
-    private Connection broncoConnection;
-    private Session broncoSession;
+    private static Connection broncoConnection;
+    private static Session broncoSession;
 
     public DatabaseManager(User broncoUser) {
+        final Thread mainThread = Thread.currentThread();
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                DatabaseManager.logout();
+            }
+        });
         this.broncoUser = broncoUser;
         this.broncoConnection = getDBConnection();
         //Update Tasks
@@ -92,10 +98,14 @@ public class DatabaseManager {
     /**
      * Closes and disconnects external connections.
      */
-    public void logout() throws SQLException{
-        broncoConnection.setAutoCommit(true);
-        broncoConnection.close();
-        broncoSession.disconnect();
+    public static void logout(){
+        try{
+            broncoConnection.setAutoCommit(true);
+            broncoConnection.close();
+            broncoSession.disconnect();
+        }catch (Exception e){
+            //we tried.
+        }
     }
 
 
