@@ -17,6 +17,7 @@ import java.util.LinkedList;
 
 /**
  * @author Tyler Manning
+ * @author Lance Martin
  */
 public class DatabaseManager {
     private User broncoUser;
@@ -26,6 +27,8 @@ public class DatabaseManager {
     public DatabaseManager(User broncoUser) {
         this.broncoUser = broncoUser;
         this.broncoConnection = getDBConnection();
+        //Update Tasks
+        updateTaskSatus();
     }
     /**
      * Establishes connection to the database remotely.
@@ -69,6 +72,7 @@ public class DatabaseManager {
 
             session.setPassword(broncoUser.getBroncoPassword());
             session.setConfig(config);
+            session.setConfig("PreferredAuthentications", "pulickey,keyboard-interactive,password");
 
             System.out.println("Establishing an SSH Connection...");
 
@@ -111,7 +115,7 @@ public class DatabaseManager {
             Task temp = new Task(result.getInt(1), result.getString(2), result.getDate(3), result.getDate(4), result.getString(5));
             activeTasks.add(temp);
         }
-        broncoConnection.commit();
+
         stmt.close();
 
 
@@ -134,7 +138,7 @@ public class DatabaseManager {
             Task temp = new Task(result.getInt(1), result.getString(2), result.getDate(3), result.getDate(4), result.getString(5));
             overDueTasks.add(temp);
         }
-        broncoConnection.commit();
+
         stmt.close();
 
 
@@ -158,7 +162,7 @@ public class DatabaseManager {
             Task temp = new Task(result.getInt(1), result.getString(4), result.getDate(5), result.getDate(6), result.getString(7));
             activeTasks.add(temp);
         }
-        broncoConnection.commit();
+
         stmt.close();
 
 
@@ -182,7 +186,7 @@ public class DatabaseManager {
             Task temp = new Task(result.getInt(1), result.getString(4), result.getDate(5), result.getDate(6), result.getString(7));
             completedTasks.add(temp);
         }
-        broncoConnection.commit();
+
         stmt.close();
 
 
@@ -210,7 +214,6 @@ public class DatabaseManager {
             Task temp = new Task(result.getInt(1), result.getString(2), result.getDate(3), result.getDate(4), result.getString(5));
             dueTasks.add(temp);
         }
-        broncoConnection.commit();
         stmt.close();
 
 
@@ -244,7 +247,6 @@ public class DatabaseManager {
             Task temp = new Task(result.getInt(1), result.getString(2), result.getDate(3), result.getDate(4), result.getString(5));
             dueTasks.add(temp);
         }
-        broncoConnection.commit();
         stmt.close();
 
 
@@ -266,8 +268,6 @@ public class DatabaseManager {
         int id = stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
 
 
-        broncoConnection.commit();
-
         create.setId(id);
 
         Date date = new Date();
@@ -284,7 +284,27 @@ public class DatabaseManager {
      * @return the task
      */
     public Task get(int id){
-        return null;//TODO:
+
+        Task temp = null;
+        try{
+
+            String sql = "SELECT * FROM Task WHERE task_id = " + id;
+
+            java.sql.Statement stmt = broncoConnection.createStatement();
+
+            ResultSet result = stmt.executeQuery(sql);
+
+            while(result.next()){
+                temp = new Task(result.getInt(1), result.getString(2), result.getDate(3), result.getDate(4), result.getString(5));
+
+            }
+
+            stmt.close();
+        } catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+        return temp;
     }
 
     /**
@@ -294,12 +314,12 @@ public class DatabaseManager {
      * @return the updated task
      */
     public Task update(Task update) throws SQLException{
-        String sql = "UPDATE Task SET label = '" + update.getLabel() + "', due_date = '" + update.getDueDate() + "', Status= '" + update.getStat().toString() + "'  WHERE task_id = " + update.getId() ;
+        String sql = "UPDATE Task SET label = '" + update.getLabel() + "', due_date = '" + update.getDueDate() + "', Status = '" + update.getStat().toString() + "'  WHERE task_id = " + update.getId() ;
 
         java.sql.Statement stmt = broncoConnection.createStatement();
 
         boolean result = stmt.execute(sql);
-        broncoConnection.commit();
+
 
         insertTag(update.getTags());
 
@@ -309,7 +329,7 @@ public class DatabaseManager {
                     "WHERE NOT EXISTS( " +
                     "SELECT task_id, tag_id FROM Task_tag WHERE task_id =" +update.getId()+ " AND tag_id =" + t.getId()+ ");";
             result = stmt.execute(sql);
-            broncoConnection.commit();
+
         }
 
 
@@ -335,18 +355,54 @@ public class DatabaseManager {
                     "SELECT label FROM Tag WHERE label ='" + t.toString()+"');";
             int id = stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
             t.setId(id);
-            broncoConnection.commit();
+
         }
         stmt.close();
     }
 
+    public void updateTaskSatus(){
+        try{
+        java.sql.Statement stmt = broncoConnection.createStatement();
+        String sql = "UPDATE Task SET status = 'OVERDUE'" +
+                 " WHERE due_date < curdate()";
+
+            boolean result = stmt.execute(sql);
+            stmt.close();
+        }
+        catch(SQLException esql){
+            System.out.println(esql.getSQLState());
+        }
+
+
+
+    }
     /**
      * Searches for tasks with the specified term
      * @param term the term to search by
      * @return the list of tasks
      */
     public LinkedList<Task> search(String term){
-        return null;//TODO
+
+        String sql = "SELECT * FROM Task WHERE label LIKE '%" + term + "%' ";
+        LinkedList<Task> leTasks = new LinkedList<>();
+
+        try{
+            java.sql.Statement stmt = broncoConnection.createStatement();
+
+            ResultSet result = stmt.executeQuery(sql);
+
+            while(result.next()){
+                Task temp = new Task(result.getInt(1), result.getString(2), result.getDate(3), result.getDate(4), result.getString(5));
+                leTasks.add(temp);
+            }
+            stmt.close();
+
+        }catch(SQLException e){
+            System.out.println(e.getSQLState());
+        }
+
+    return leTasks;
+
     }
 
 
