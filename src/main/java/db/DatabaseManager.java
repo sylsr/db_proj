@@ -51,7 +51,7 @@ public class DatabaseManager {
 
             Class.forName("com.mysql.jdbc.Driver").newInstance();
             System.out.println("Attempting to connect to the database.");
-            con = DriverManager.getConnection("jdbc:mysql://localhost:7555?verifyServerCertificate=false&useSSL=true", broncoUser.getSandboxUserId(), broncoUser.getSandboxPassword());
+            con = DriverManager.getConnection("jdbc:mysql://localhost:7555/todoList?verifyServerCertificate=false&useSSL=true", broncoUser.getSandboxUserId(), broncoUser.getSandboxPassword());
 
             return con;
         } catch (Exception ex) {
