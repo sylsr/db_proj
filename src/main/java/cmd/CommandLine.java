@@ -39,6 +39,13 @@ public class CommandLine {
     }
 
     /**
+     * Logs out from the SQL database
+     */
+    @Command public void logout(){
+        DatabaseManager.logout();
+    }
+
+    /**
      * Adds a task to the database
      * @param label the label of the task
      * @return the id of the task
