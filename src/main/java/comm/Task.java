@@ -122,8 +122,7 @@ public class Task implements Comparable<Task>{
      */
     public Date getDueDate() {
         if(dueDate.equals(null)){
-            Date date = new Date();
-            return date;
+            return null;
         }
         return dueDate;
     }
