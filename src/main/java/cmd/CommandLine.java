@@ -150,7 +150,7 @@ public class CommandLine {
     @Command
     public String active( String tag){
         try {
-            return db.getActiveTasksWithTag(new Tag(tag)).toString();
+            return buildPrintOutput(db.getActiveTasksWithTag(new Tag(tag)));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -166,7 +166,7 @@ public class CommandLine {
     @Command
     public String completed(String tag){
         try {
-            return db.getCompletedTasksWithTag(new Tag(tag)).toString();
+            return buildPrintOutput(db.getCompletedTasksWithTag(new Tag(tag)));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -181,7 +181,7 @@ public class CommandLine {
     @Command
     public String overdue(){
         try {
-            return db.getOverdueTasks().toString();
+            return buildPrintOutput(db.getOverdueTasks());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -198,13 +198,13 @@ public class CommandLine {
         switch(timeline){
             case "today":
                 try {
-                    return db.getTasksDueToday().toString();
+                    return buildPrintOutput(db.getTasksDueToday());
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
             case "soon":
                 try {
-                    return db.getTasksDueSoon().toString();
+                    return buildPrintOutput(db.getTasksDueSoon());
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -228,6 +228,15 @@ public class CommandLine {
             e.printStackTrace();
         }
         return "Successfully changed the label";
+    }
+
+    private String buildPrintOutput(LinkedList<Task> list){
+        StringBuilder str = new StringBuilder();
+        for(Task t : list){
+            str.append(t.toString());
+            str.append("\n");
+        }
+        return str.toString();
     }
 
     /**
