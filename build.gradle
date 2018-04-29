@@ -6,6 +6,12 @@ mainClassName = "task.TaskManager"
 
 sourceCompatibility = 1.8
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'task.TaskManager'
+    }
+}
+
 run {
     if (project.hasProperty("appArgs")) {
         args Eval.me(appArgs)
