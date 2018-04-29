@@ -1,5 +1,7 @@
 package comm;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -119,6 +121,10 @@ public class Task implements Comparable<Task>{
      * @return gets the due date of this task
      */
     public Date getDueDate() {
+        if(dueDate.equals(null)){
+            Date date = new Date();
+            return date;
+        }
         return dueDate;
     }
 

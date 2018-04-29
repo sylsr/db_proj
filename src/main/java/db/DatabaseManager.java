@@ -236,18 +236,8 @@ public class DatabaseManager {
      * @return the list of tasks
      */
     public LinkedList<Task> getTasksDueSoon() throws SQLException{
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = new Date();
 
-        //Add three days to today
-        Calendar c = Calendar.getInstance();
-        c.setTime(date);
-        c.add(Calendar.DATE, 2);
-
-        String today = dateFormat.format(date);
-        String dayAfterTomorrow = dateFormat.format(c.getTime());
-
-        String sql = "SELECT * FROM Task WHERE due_Date > ='" + today + "' AND <= '" + dayAfterTomorrow + "'";
+        String sql = "SELECT * FROM Task WHERE due_Date  >= CURDATE() AND due_Date <= (CURDATE() +3)";
         LinkedList<Task> dueTasks = new LinkedList<>();
 
         java.sql.Statement stmt = broncoConnection.createStatement();
@@ -271,7 +261,7 @@ public class DatabaseManager {
      */
     public Task createTask(Task create) throws SQLException{
 
-        String sql = "INSERT Task (label, due_date, Status) values ('" + create.getLabel() + "', '" + create.getDueDate() +  "' , '" + create.getStat().toString() + "' )";
+        String sql = "INSERT Task (label) values ('" + create.getLabel() + "' )";
 
         java.sql.Statement stmt = broncoConnection.createStatement();
 
