@@ -9,8 +9,12 @@ import db.DatabaseManager;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.Locale;
 
 /**
  * @author Tyler Manning
@@ -67,9 +71,10 @@ public class CommandLine {
      * @return output string that lets the user know their command has completed successfully
      */
     @Command
-    public String due(int id, String date){
+    public String due(int id, String date) throws ParseException{
         Task update = db.get(id);
-        update.setDueDate(new Date(date));
+        DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        update.setDueDate(fmt.parse(date));
         try {
             db.update(update);
         } catch (SQLException e) {
@@ -150,7 +155,7 @@ public class CommandLine {
     @Command
     public String active( String tag){
         try {
-            return buildPrintOutput(db.getActiveTasksWithTag(new Tag(tag)));
+            return buildPrintOutput(db.getActiveTasksWithTag(new Tag(tag))).toString();
         } catch (SQLException e) {
             e.printStackTrace();
         }
