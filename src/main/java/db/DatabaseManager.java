@@ -318,23 +318,30 @@ public class DatabaseManager {
      * @return the updated task
      */
     public Task update(Task update) throws SQLException{
-        String sql = "UPDATE Task SET label = '" + update.getLabel() + "', due_date = '" + update.getDueDate() + "', Status = '" + update.getStat().toString() + "'  WHERE task_id = " + update.getId() ;
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String dueDate = dateFormat.format(update.getDueDate());
+
+
+        String sql = "UPDATE Task SET label = '" + update.getLabel() + "', due_date = '" + dueDate + "', Status = '" + update.getStat().toString() + "'  WHERE task_id = " + update.getId() ;
 
         java.sql.Statement stmt = broncoConnection.createStatement();
 
         boolean result = stmt.execute(sql);
 
+        if(!update.getTags().equals(null)){
+            insertTag(update.getTags());
 
-        insertTag(update.getTags());
+            for(Tag t : update.getTags()){
+                sql = "INSERT INTO Task_tag (task_id, tag_id) " +
+                        "SELECT * FROM ( SELECT " +update.getId()+", " + t.getId()+ ") AS temp " +
+                        "WHERE NOT EXISTS( " +
+                        "SELECT task_id, tag_id FROM Task_tag WHERE task_id =" +update.getId()+ " AND tag_id =" + t.getId()+ ");";
+                result = stmt.execute(sql);
 
-        for(Tag t : update.getTags()){
-            sql = "INSERT INTO Task_tag (task_id, tag_id) " +
-                    "SELECT * FROM ( SELECT " +update.getId()+", " + t.getId()+ ") AS temp " +
-                    "WHERE NOT EXISTS( " +
-                    "SELECT task_id, tag_id FROM Task_tag WHERE task_id =" +update.getId()+ " AND tag_id =" + t.getId()+ ");";
-            result = stmt.execute(sql);
-
+            }
         }
+
 
 
         stmt.close();
@@ -351,7 +358,6 @@ public class DatabaseManager {
         java.sql.Statement stmt = broncoConnection.createStatement();
 
         String sql = "";
-
         for(Tag t : tags){
             sql = "INSERT INTO Tag (label) " +
                     "SELECT * FROM ( SELECT '" + t.toString()+"') AS temp " +
