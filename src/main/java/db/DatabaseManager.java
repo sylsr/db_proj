@@ -266,13 +266,16 @@ public class DatabaseManager {
         java.sql.Statement stmt = broncoConnection.createStatement();
 
         //Execute query and return the ID of the task that was inserted  into the query
-        int id = stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+        Boolean result = stmt.execute(sql);
 
 
-        create.setId(id);
+        //Select id for last inserted
+        sql = "SELECT LAST_INSERT_ID()";
+        ResultSet results = stmt.executeQuery(sql);
 
-        Date date = new Date();
-        create.setCreateDate(date);
+        while(results.next()){
+            create.setId(results.getInt(1));
+        }
 
         stmt.close();
 
