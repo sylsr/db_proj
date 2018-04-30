@@ -94,7 +94,7 @@ public class CommandLine {
     public String tag( int id, String ... tag){
         Task update = db.get(id);
         for(String t : tag){
-            up  date.addTag(new Tag(t));
+            update.addTag(new Tag(t));
         }
         try {
             db.update(update);

@@ -44,6 +44,7 @@ public class Task implements Comparable<Task>{
         this.label =label;
         this.createDate = new Date();
         this.stat = Status.ACTIVE;//Default to active
+        this.tags = new LinkedList<>();
     }
     /**
      * Overloaded constructor
@@ -59,6 +60,7 @@ public class Task implements Comparable<Task>{
         this.createDate = createDate;
         this.dueDate = dueDate;
         this.stat = Status.valueOf(status);
+        this.tags = new LinkedList<>();
 
     }
     /**

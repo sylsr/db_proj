@@ -363,8 +363,15 @@ public class DatabaseManager {
                     "SELECT * FROM ( SELECT '" + t.toString()+"') AS temp " +
                     "WHERE NOT EXISTS( " +
                     "SELECT label FROM Tag WHERE label ='" + t.toString()+"');";
-            int id = stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
-            t.setId(id);
+            Boolean result = stmt.execute(sql);
+
+            sql = "SELECT  * FROM Tag WHERE label = '" + t.toString() +"'";
+            ResultSet results = stmt.executeQuery(sql);
+
+            while(results.next()){
+                t.setId(results.getInt(1));
+            }
+
 
         }
         stmt.close();
