@@ -72,9 +72,10 @@ public class CommandLine {
      */
     @Command
     public String due(int id, String date) throws ParseException{
-        Task update = db.get(id);
         DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-        update.setDueDate(fmt.parse(date));
+        Date newDate = fmt.parse(date);
+        Task update = db.get(id);
+        update.setDueDate(newDate);
         try {
             db.update(update);
         } catch (SQLException e) {
