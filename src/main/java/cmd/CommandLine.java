@@ -252,7 +252,7 @@ public class CommandLine {
      */
     @Command
     public String search(String searchTerm){
-        return db.search(searchTerm).toString();
+        return buildPrintOutput(db.search(searchTerm));
     }
 
     /**
