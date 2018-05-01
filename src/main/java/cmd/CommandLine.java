@@ -35,7 +35,7 @@ public class CommandLine {
     @Command
     public String active(){
         try {
-            return db.getActiveTasks().toString();
+            return buildPrintOutput(db.getActiveTasks());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -156,7 +156,7 @@ public class CommandLine {
     @Command
     public String active( String tag){
         try {
-            return buildPrintOutput(db.getActiveTasksWithTag(new Tag(tag))).toString();
+            return buildPrintOutput(db.getActiveTasksWithTag(new Tag(tag)));
         } catch (SQLException e) {
             e.printStackTrace();
         }
