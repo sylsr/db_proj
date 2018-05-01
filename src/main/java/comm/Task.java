@@ -173,7 +173,7 @@ public class Task implements Comparable<Task>{
 
     @Override
     public String toString() {
-        return "id: "+id+" "+label+" Created On: "+createDate+" Due by: "+dueDate+" Tags: "+tags+"Status: "+stat;
+        return "id: "+id+" "+label+" Created On: "+createDate+" Due by: "+dueDate+" Status: "+stat;
     }
 
     @Override
